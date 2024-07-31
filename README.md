@@ -21,7 +21,7 @@ Book Catalog App is a React web application designed to help users browse a cata
     cd conekta-book-catalog
     ```
 
-2. **Install dependencies using Yarn:**
+2. **Install dependencies:**
     ```bash
     yarn install
     ```
@@ -35,27 +35,12 @@ Book Catalog App is a React web application designed to help users browse a cata
 
 - **Browse Books:** View the list of available books.
 - **Add to Reading List:** Click the "Add to Reading List" button to add a book to your personal reading list.
-- **Remove from Reading List:** Click the "Remove from Reading List" button to remove a book from your personal reading list.
+- **Remove from Reading List:** Click the "Remove from Reading List" button or the "X" icon to remove a book from your personal reading list.
 - **Filter by Genre:** Use the genre filter dropdown to view books of a specific genre.
 
 ## Deployment
 
-This project is deployed on Vercel. Visit the live app [here](https://your-vercel-app-url.vercel.app).
-
-### Deploying on Vercel
-
-1. **Login to Vercel:**
-    ```bash
-    yarn global add vercel
-    vercel login
-    ```
-
-2. **Deploy the project:**
-    ```bash
-    vercel
-    ```
-
-Follow the prompts to deploy the app. Once deployed, you will get a URL where your app is hosted.
+This project is deployed on Vercel. Visit the live app [here](https://conekta-book-catalog.vercel.app).
 
 ## Testing
 
@@ -68,7 +53,7 @@ Unit tests are written using Jest and React Testing Library. To run the tests, f
 
 Example test for adding a book to the reading list:
 
-```typescript
+```javascript
 test('adds a book to the reading list', () => {
     const isbn = '978-0618640157';
     addToReadingList(isbn);
@@ -81,29 +66,8 @@ test('adds a book to the reading list', () => {
 - React
 - TypeScript
 - Styled Components
-- Jest for unit testing
-- React Testing Library for component testing
-- Yarn for dependency management
-
-## Contributing
-
-Contributions are welcome! Please fork the repository and submit a pull request for any improvements or bug fixes.
-
-1. **Fork the repository**
-2. **Create a new branch**
-    ```bash
-    git checkout -b feature-branch
-    ```
-3. **Make your changes**
-4. **Commit your changes**
-    ```bash
-    git commit -m 'Add some feature'
-    ```
-5. **Push to the branch**
-    ```bash
-    git push origin feature-branch
-    ```
-6. **Open a pull request**
+- Local Storage for data persistence
+- Jest and React Testing Library for unit testing
 
 ## License
 
