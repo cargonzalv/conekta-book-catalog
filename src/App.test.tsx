@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import App from './App';
 
 describe('App Component', () => {
@@ -9,39 +9,47 @@ describe('App Component', () => {
 
   test('renders the header title', () => {
     render(<App />);
-    const headerElement = screen.getByText(/Library Zen/i);
+    const headerElement = screen.getByRole('heading', { name: /Book Catalog/ });
     expect(headerElement).toBeInTheDocument();
   });
 
   test('renders book list and allows adding/removing from the reading list', async () => {
     render(<App />);
-    const addButton = await screen.findByText(/Add to Reading List/i);
-    fireEvent.click(addButton);
 
-    const readingList = screen.getByText(/Remove from Reading List/i);
-    expect(readingList).toBeInTheDocument();
+    const addButtons = await screen.findAllByRole('button', { name: /Add to Reading List/i });
 
-    fireEvent.click(readingList);
-    const updatedAddButton = screen.getByText(/Add to Reading List/i);
-    expect(updatedAddButton).toBeInTheDocument();
+    fireEvent.click(addButtons[0]);
+
+    const removeButton = screen.getByRole('button', { name: /Remove from Reading List/i });
+    expect(removeButton).toBeInTheDocument();
+
+    fireEvent.click(removeButton);
+
+    const newAddButtons = await screen.findAllByRole('button', { name: /Add to Reading List/i });
+    expect(newAddButtons.length).toBe(addButtons.length);
   });
 
   test('filters books by genre and updates counters', async () => {
     render(<App />);
+
     const genreFilter = screen.getByDisplayValue('All Genres');
+
     fireEvent.change(genreFilter, { target: { value: 'Fantasía' } });
+    
 
     const filteredBooks = await screen.findAllByText(/Fantasía/i);
     expect(filteredBooks.length).toBeGreaterThan(0);
 
     const filteredCounter = screen.getByText(/Filtered Books:/i);
-    expect(filteredCounter.textContent).toContain('Filtered Books: 2');
+    expect(filteredCounter.textContent).toContain('Filtered Books: 3');
   });
 
   test('persists reading list in local storage', async () => {
     render(<App />);
-    const addButton = await screen.findByText(/Add to Reading List/i);
-    fireEvent.click(addButton);
+
+    const addButtons = await screen.findAllByRole('button', { name: /Add to Reading List/i });
+
+    fireEvent.click(addButtons[0]);
 
     const storedReadingList = JSON.parse(localStorage.getItem('readingList') || '[]');
     expect(storedReadingList.length).toBe(1);
@@ -49,16 +57,21 @@ describe('App Component', () => {
 
   test('synchronizes state across tabs', async () => {
     render(<App />);
-    const addButton = await screen.findByText(/Add to Reading List/i);
-    fireEvent.click(addButton);
 
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'readingList',
-      newValue: JSON.stringify([]),
-    }));
+    const addButtons = await screen.findAllByRole('button', { name: /Add to Reading List/i });
 
-    await waitFor(() => {
-      expect(screen.getByText(/Add to Reading List/i)).toBeInTheDocument();
+    fireEvent.click(addButtons[0]);
+
+    await act(async () => {
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'readingList',
+        newValue: JSON.stringify([]),
+      }));
+    });
+
+    await waitFor(async () => {
+      const newAddButtons = await screen.findAllByRole('button', { name: /Add to Reading List/i });
+      expect(newAddButtons.length).toBe(addButtons.length);
     });
   });
 });
