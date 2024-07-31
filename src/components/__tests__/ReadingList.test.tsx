@@ -1,31 +1,42 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import ReadingList from '../ReadingList';
-import { Book } from '../../types';
+import { Book as BookType } from '../../types';
 
-const mockBooks: Book[] = [
+const mockReadingList: BookType[] = [
   {
-    title: "El Señor de los Anillos",
-    pages: 1200,
-    genre: "Fantasía",
-    cover: "https://example.com/cover.jpg",
-    synopsis: "Una aventura épica en un mundo de fantasía llamado la Tierra Media.",
-    year: 1954,
-    ISBN: "978-0618640157",
-    author: { name: "J.R.R. Tolkien", otherBooks: ["El Hobbit", "El Silmarillion"] }
+    title: 'Test Book 1',
+    cover: 'https://example.com/cover1.jpg',
+    synopsis: 'This is a test synopsis 1.',
+    genre: 'Fiction',
+    pages: 100,
+    year: 2020,
+    ISBN: '1234567890',
+    author: {
+      name: 'Test Author 1',
+      otherBooks: [],
+    },
   },
 ];
 
 describe('ReadingList Component', () => {
-  test('renders books in the reading list', () => {
-    render(<ReadingList readingList={mockBooks} onRemove={() => {}} />);
-    const bookTitle = screen.getByText(/El Señor de los Anillos/i);
-    expect(bookTitle).toBeInTheDocument();
+  const mockOnRemove = jest.fn();
+
+  test('renders reading list books correctly', () => {
+    render(<ReadingList readingList={mockReadingList} onRemove={mockOnRemove} />);
+    expect(screen.getByText(/Test Book 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/This is a test synopsis 1./i)).toBeInTheDocument();
   });
 
-  test('renders message when reading list is empty', () => {
-    render(<ReadingList readingList={[]} onRemove={() => {}} />);
-    const emptyMessage = screen.getByText(/Your reading list is empty/i);
-    expect(emptyMessage).toBeInTheDocument();
+  test('calls onRemove when X button is clicked', () => {
+    render(<ReadingList readingList={mockReadingList} onRemove={mockOnRemove} />);
+    const removeButton = screen.getByText(/×/);
+    fireEvent.click(removeButton);
+    expect(mockOnRemove).toHaveBeenCalledWith('1234567890');
+  });
+
+  test('displays message when reading list is empty', () => {
+    render(<ReadingList readingList={[]} onRemove={mockOnRemove} />);
+    expect(screen.getByText(/Your reading list is empty./i)).toBeInTheDocument();
   });
 });

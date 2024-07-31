@@ -3,17 +3,26 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import GenreFilter from '../GenreFilter';
 
 describe('GenreFilter Component', () => {
-  test('renders genre filter dropdown', () => {
-    render(<GenreFilter genres={['Fantasía', 'Ciencia ficción']} selectedGenre="" onSelectGenre={() => {}} />);
-    const genreSelect = screen.getByLabelText(/Filter by Genre/i);
-    expect(genreSelect).toBeInTheDocument();
+  const mockGenres = ['Fiction', 'Non-Fiction', 'Science Fiction'];
+  const mockOnSelectGenre = jest.fn();
+
+  test('renders genre filter options', () => {
+    render(<GenreFilter genres={mockGenres} selectedGenre="" onSelectGenre={mockOnSelectGenre} />);
+    expect(screen.getByDisplayValue('All Genres')).toBeInTheDocument();
+    expect(screen.getByText('Fiction')).toBeInTheDocument();
+    expect(screen.getByText('Non-Fiction')).toBeInTheDocument();
+    expect(screen.getByText('Science Fiction')).toBeInTheDocument();
   });
 
-  test('calls onSelectGenre with the correct genre', () => {
-    const onSelectGenre = jest.fn();
-    render(<GenreFilter genres={['Fantasía', 'Ciencia ficción']} selectedGenre="" onSelectGenre={onSelectGenre} />);
-    const genreSelect = screen.getByLabelText(/Filter by Genre/i);
-    fireEvent.change(genreSelect, { target: { value: 'Fantasía' } });
-    expect(onSelectGenre).toHaveBeenCalledWith('Fantasía');
+  test('calls onSelectGenre when a genre is selected', () => {
+    render(<GenreFilter genres={mockGenres} selectedGenre="" onSelectGenre={mockOnSelectGenre} />);
+    const genreSelect = screen.getByDisplayValue('All Genres');
+    fireEvent.change(genreSelect, { target: { value: 'Fiction' } });
+    expect(mockOnSelectGenre).toHaveBeenCalledWith('Fiction');
+  });
+
+  test('displays the correct selected genre', () => {
+    render(<GenreFilter genres={mockGenres} selectedGenre="Science Fiction" onSelectGenre={mockOnSelectGenre} />);
+    expect(screen.getByDisplayValue('Science Fiction')).toBeInTheDocument();
   });
 });

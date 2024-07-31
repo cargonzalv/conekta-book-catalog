@@ -1,44 +1,64 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from './App';
 
 describe('App Component', () => {
+  beforeEach(() => {
+    localStorage.clear(); // Clear localStorage before each test
+  });
+
   test('renders the header title', () => {
     render(<App />);
-    const headerElement = screen.getByText(/Book Catalog/i);
+    const headerElement = screen.getByText(/Library Zen/i);
     expect(headerElement).toBeInTheDocument();
   });
 
-  test('adds a book to the reading list', () => {
+  test('renders book list and allows adding/removing from the reading list', async () => {
     render(<App />);
-    const addButton = screen.getByText(/Add to Reading List/i);
+    const addButton = await screen.findByText(/Add to Reading List/i);
     fireEvent.click(addButton);
-    const removeButton = screen.getByText(/Remove from Reading List/i);
-    expect(removeButton).toBeInTheDocument();
+
+    const readingList = screen.getByText(/Remove from Reading List/i);
+    expect(readingList).toBeInTheDocument();
+
+    fireEvent.click(readingList);
+    const updatedAddButton = screen.getByText(/Add to Reading List/i);
+    expect(updatedAddButton).toBeInTheDocument();
   });
 
-  test('removes a book from the reading list', () => {
+  test('filters books by genre and updates counters', async () => {
     render(<App />);
-    const addButton = screen.getByText(/Add to Reading List/i);
+    const genreFilter = screen.getByDisplayValue('All Genres');
+    fireEvent.change(genreFilter, { target: { value: 'Fantasía' } });
+
+    const filteredBooks = await screen.findAllByText(/Fantasía/i);
+    expect(filteredBooks.length).toBeGreaterThan(0);
+
+    const filteredCounter = screen.getByText(/Filtered Books:/i);
+    expect(filteredCounter.textContent).toContain('Filtered Books: 2');
+  });
+
+  test('persists reading list in local storage', async () => {
+    render(<App />);
+    const addButton = await screen.findByText(/Add to Reading List/i);
     fireEvent.click(addButton);
-    const removeButton = screen.getByText(/Remove from Reading List/i);
-    fireEvent.click(removeButton);
-    expect(removeButton).not.toBeInTheDocument();
+
+    const storedReadingList = JSON.parse(localStorage.getItem('readingList') || '[]');
+    expect(storedReadingList.length).toBe(1);
   });
 
-  test('filters books by genre', () => {
+  test('synchronizes state across tabs', async () => {
     render(<App />);
-    const genreSelect = screen.getByLabelText(/Filter by Genre/i);
-    fireEvent.change(genreSelect, { target: { value: 'Fantasía' } });
-    const bookTitle = screen.getByText(/El Señor de los Anillos/i);
-    expect(bookTitle).toBeInTheDocument();
-  });
+    const addButton = await screen.findByText(/Add to Reading List/i);
+    fireEvent.click(addButton);
 
-  test('searches for a book by title', () => {
-    render(<App />);
-    const searchInput = screen.getByPlaceholderText(/Search books.../i);
-    fireEvent.change(searchInput, { target: { value: 'Dune' } });
-    const bookTitle = screen.getByText(/Dune/i);
-    expect(bookTitle).toBeInTheDocument();
+    window.dispatchEvent(new StorageEvent('storage', {
+      key: 'readingList',
+      newValue: JSON.stringify([]),
+    }));
+
+    await waitFor(() => {
+      expect(screen.getByText(/Add to Reading List/i)).toBeInTheDocument();
+    });
   });
 });
