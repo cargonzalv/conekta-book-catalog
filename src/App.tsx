@@ -5,12 +5,13 @@ import GenreFilter from './components/GenreFilter';
 import booksData from './data/books.json';
 import { Book } from './types';
 import useLocalStorage from './hooks/useLocalStorage';
-import './styles.css';
+import { Container, Header, Main, Footer, Counters, SearchBar, FilterBar } from './styles';
 
 const App: React.FC = () => {
     const [books, setBooks] = useState<Book[]>([]);
     const [readingList, setReadingList] = useLocalStorage<Book[]>('readingList', []);
     const [selectedGenre, setSelectedGenre] = useState<string>('');
+    const [searchTerm, setSearchTerm] = useState<string>('');
 
     useEffect(() => {
         const booksFromJson = booksData.library.map(item => item.book);
@@ -32,24 +33,61 @@ const App: React.FC = () => {
         setSelectedGenre(genre);
     };
 
-    const filteredBooks = selectedGenre ? books.filter(book => book.genre === selectedGenre) : books;
+    const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredBooks = books.filter(book => {
+        return (
+            (selectedGenre ? book.genre === selectedGenre : true) &&
+            (searchTerm ? book.title.toLowerCase().includes(searchTerm.toLowerCase()) : true)
+        );
+    });
 
     return (
-        <div className="App">
-            <h1>Book Catalog</h1>
-            <GenreFilter
-                genres={[...new Set(books.map(book => book.genre))]}
-                selectedGenre={selectedGenre}
-                onSelectGenre={filterByGenre}
-            />
-            <BookList
-                books={filteredBooks}
-                onAdd={addToReadingList}
-                onRemove={removeFromReadingList}
-                readingList={readingList}
-            />
-            <ReadingList readingList={readingList} onRemove={removeFromReadingList} />
-        </div>
+        <Container>
+            <Header>
+                <h1>Book Catalog</h1>
+                <FilterBar>
+                    <SearchBar>
+                        <input 
+                            type="text" 
+                            placeholder="Search books..." 
+                            value={searchTerm} 
+                            onChange={handleSearch} 
+                        />
+                    </SearchBar>
+                    <GenreFilter
+                        genres={[...new Set(books.map(book => book.genre))]}
+                        selectedGenre={selectedGenre}
+                        onSelectGenre={filterByGenre}
+                    />
+                </FilterBar>
+            </Header>
+            <Main>
+                <section>
+                    <h2>Available Books</h2>
+                    <Counters>
+                        <span>Total Books: {books.length}</span>
+                        <span>Reading List: {readingList.length}</span>
+                        <span>Filtered Books: {filteredBooks.length}</span>
+                    </Counters>
+                    <BookList
+                        books={filteredBooks}
+                        onAdd={addToReadingList}
+                        onRemove={removeFromReadingList}
+                        readingList={readingList}
+                    />
+                </section>
+                <section>
+                    <h2>My Reading List</h2>
+                    <ReadingList readingList={readingList} onRemove={removeFromReadingList} />
+                </section>
+            </Main>
+            <Footer>
+                <p>Book Catalog App © 2023</p>
+            </Footer>
+        </Container>
     );
 };
 

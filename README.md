@@ -21,14 +21,14 @@ Book Catalog App is a React web application designed to help users browse a cata
     cd conekta-book-catalog
     ```
 
-2. **Install dependencies:**
+2. **Install dependencies using Yarn:**
     ```bash
-    npm install
+    yarn install
     ```
 
 3. **Start the development server:**
     ```bash
-    npm start
+    yarn start
     ```
 
 ## Usage
@@ -46,28 +46,24 @@ This project is deployed on Vercel. Visit the live app [here](https://your-verce
 
 1. **Login to Vercel:**
     ```bash
-    npx vercel login
+    yarn global add vercel
+    vercel login
     ```
 
 2. **Deploy the project:**
     ```bash
-    npx vercel
+    vercel
     ```
 
 Follow the prompts to deploy the app. Once deployed, you will get a URL where your app is hosted.
 
 ## Testing
 
-Unit tests are written using Jest. To run the tests, follow these steps:
+Unit tests are written using Jest and React Testing Library. To run the tests, follow these steps:
 
-1. **Install Jest:**
+1. **Run the tests:**
     ```bash
-    npm install --save-dev jest
-    ```
-
-2. **Run the tests:**
-    ```bash
-    npm test
+    yarn test
     ```
 
 Example test for adding a book to the reading list:
@@ -84,8 +80,10 @@ test('adds a book to the reading list', () => {
 
 - React
 - TypeScript
-- Local Storage for data persistence
+- Styled Components
 - Jest for unit testing
+- React Testing Library for component testing
+- Yarn for dependency management
 
 ## Contributing
 

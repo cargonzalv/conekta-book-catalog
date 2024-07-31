@@ -1,37 +1,94 @@
+/* src/styles.css */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    background-color: #f4f4f4;
+    padding: 0;
+    background-color: #f0f0f0;
 }
 
-h1 {
+.header {
+    background-color: #007bff;
+    color: white;
+    padding: 20px;
     text-align: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 2rem;
+}
+
+.counters {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.main-content {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.book-list, .reading-list {
+    width: 45%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .book {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin: 10px;
     display: flex;
     align-items: center;
-    background-color: #fff;
+    margin-bottom: 20px;
 }
 
 .book img {
     max-width: 100px;
     margin-right: 20px;
+    border-radius: 4px;
+}
+
+.book h2 {
+    margin: 0 0 10px;
+}
+
+.book p {
+    margin: 0 0 10px;
 }
 
 button {
-    margin-top: 10px;
-    padding: 5px 10px;
+    padding: 10px 20px;
     border: none;
+    border-radius: 4px;
     background-color: #007bff;
-    color: #fff;
+    color: white;
     cursor: pointer;
 }
 
 button:hover {
     background-color: #0056b3;
+}
+
+label {
+    margin-right: 10px;
+}
+
+select {
+    padding: 5px;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .book-list, .reading-list {
+        width: 90%;
+        margin-bottom: 20px;
+    }
 }

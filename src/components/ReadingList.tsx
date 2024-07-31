@@ -10,16 +10,19 @@ interface Props {
 const ReadingList: React.FC<Props> = ({ readingList, onRemove }) => {
     return (
         <div>
-            <h2>My Reading List</h2>
-            {readingList.map(book => (
-                <Book
-                    key={book.ISBN}
-                    book={book}
-                    onAdd={() => {}}
-                    onRemove={onRemove}
-                    isInReadingList={true}
-                />
-            ))}
+            {readingList.length > 0 ? (
+                readingList.map(book => (
+                    <Book
+                        key={book.ISBN}
+                        book={book}
+                        onAdd={() => {}}
+                        onRemove={onRemove}
+                        isInReadingList={true}
+                    />
+                ))
+            ) : (
+                <p>Your reading list is empty.</p>
+            )}
         </div>
     );
 };
